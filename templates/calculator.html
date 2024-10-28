@@ -3,56 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/styles.css">
-    <title>Calculator</title>
+    <title>FastAPI Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .calculator {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-<style>
-    body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-}
-
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #218838;
-}
-    
-</style>
 <body>
-    <div class="container">
-        <h1>Simple Calculator</h1>
-        <form id="calcForm">
+    <div class="calculator">
+        <h2>FastAPI Calculator</h2>
+        <form action="/calculate/" method="post">
             <input type="number" name="number1" placeholder="Number 1" required>
             <input type="number" name="number2" placeholder="Number 2" required>
             <select name="operation" required>
@@ -64,27 +55,13 @@ button:hover {
             </select>
             <button type="submit">Calculate</button>
         </form>
-        <div id="result"></div>
+        <div id="result">
+            {% if result is not none %}
+                <p>Result: {{ result }}</p>
+            {% elif error %}
+                <p style="color: red;">Error: {{ error }}</p>
+            {% endif %}
+        </div>
     </div>
-
-    <script>
-        document.getElementById("calcForm").onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const response = await fetch('/calculate/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    number1: parseFloat(formData.get('number1')),
-                    number2: parseFloat(formData.get('number2')),
-                    operation: formData.get('operation')
-                })
-            });
-            const result = await response.json();
-            document.getElementById('result').innerText = result.error ? result.error : `Result: ${result.result}`;
-        }
-    </script>
 </body>
 </html>
