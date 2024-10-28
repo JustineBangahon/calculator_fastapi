@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
@@ -102,7 +102,13 @@ async def hello_world():
     return {"message": "Hello World"}
 
 @app.post("/calculate/")
-async def calculate(calc: Calculation):
+async def calculate(
+    operation: str = Form(...),
+    number1: float = Form(...),
+    number2: float = Form(...)
+):
+    calc = Calculation(operation=operation, number1=number1, number2=number2)
+    
     if calc.operation == "add":
         result = calc.number1 + calc.number2
     elif calc.operation == "subtract":
