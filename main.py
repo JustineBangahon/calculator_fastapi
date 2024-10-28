@@ -79,12 +79,13 @@ async def read_root():
 async def hello_world():
     return {"message": "Hello World"}
 
-@app.post("/calculate/")
+@app.post("/calculate/", response_class=HTMLResponse)
 async def calculate(
     operation: str = Form(...),
     number1: float = Form(...),
     number2: float = Form(...)
 ):
+    # Perform the calculation based on the selected operation
     if operation == "add":
         result = number1 + number2
     elif operation == "subtract":
@@ -93,9 +94,46 @@ async def calculate(
         result = number1 * number2
     elif operation == "divide":
         if number2 == 0:
-            return {"error": "Cannot divide by zero"}
+            return HTMLResponse(content="<h1>Error: Cannot divide by zero</h1>", status_code=400)
         result = number1 / number2
     else:
-        return {"error": "Invalid operation"}
-    
-    return {"result": result}
+        return HTMLResponse(content="<h1>Error: Invalid operation</h1>", status_code=400)
+
+    # Create a result page
+    return HTMLResponse(content=f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculation Result</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }}
+            .result {{
+                background: white;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="result">
+            <h2>Calculation Result</h2>
+            <p>Result: {result}</p>
+            <a href="/">Go Back</a>
+        </div>
+    </body>
+    </html>
+    """)
+
